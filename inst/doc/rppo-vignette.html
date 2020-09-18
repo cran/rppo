@@ -228,11 +228,11 @@ print(present_terms[1:5,c(&quot;termID&quot;,&quot;label&quot;)])
 df &lt;- results$data
 print(df[1:1,])
 #&gt;   dayOfYear year   genus specificEpithet latitude longitude
-#&gt; 1       106 2013 Quercus          lobata 34.67545 -120.0407
-#&gt;                                                                                                                                                                                                                                            termID
-#&gt; 1 obo:PPO_0002316,obo:PPO_0002322,obo:PPO_0002018,obo:PPO_0002318,obo:PPO_0002022,obo:PPO_0002312,obo:PPO_0002313,obo:PPO_0002014,obo:PPO_0002024,obo:PPO_0002015,obo:PPO_0002000,obo:PPO_0002017,obo:PPO_0002020,obo:PPO_0002320,obo:PPO_0002315
-#&gt;    source                               eventId
-#&gt; 1 USA-NPN http://n2t.net/ark:/21547/Amg22054478
+#&gt; 1       110 2013 Quercus           rubra 40.86628 -73.87572
+#&gt;                                                                                                            termID
+#&gt; 1 obo:PPO_0002000,obo:PPO_0002014,obo:PPO_0002015,obo:PPO_0002017,obo:PPO_0002312,obo:PPO_0002313,obo:PPO_0002315
+#&gt;    source                                  eventId
+#&gt; 1 USA-NPN urn:phenologicalObservingProcess/5132665
 </code></pre>
 
 <p>The readme and citation files returned by the list of results can be accessed by calling the readme and citation elements.  Note that the the file &ldquo;citation_and_data_use_policies.txt&rdquo; that is referred to in the readme file can be accessed using <code>cat(results$citation)</code> </p>
@@ -245,7 +245,7 @@ print(df[1:1,])
 #&gt; about the query that was run.  
 #&gt; 
 #&gt; data file = data.csv
-#&gt; date query ran = Tue Jun 05 2018 19:44:07 GMT-0400 (EDT)
+#&gt; date query ran = Thu Sep 17 2020 13:14:33 GMT-0400 (EDT)
 #&gt; query = +genus:Quercus AND +plantStructurePresenceTypes:&quot;http://purl.obolibrary.org/obo/PPO_0002313&quot; AND +year:&gt;=2013 AND +year:&lt;=2013 AND +dayOfYear:&gt;=100 AND +dayOfYear:&lt;=110 AND source:USA-NPN,NEON
 #&gt; fields returned = dayOfYear,year,genus,specificEpithet,latitude,longitude,source,eventId
 #&gt; user specified limit = 10
@@ -295,6 +295,7 @@ resultFrame &lt;- data.frame(
 # fetch &quot;present&quot; and &quot;absent&quot; terms using `ppo_terms`
 termList &lt;- ppo_terms(absent = TRUE, present = TRUE);
 #&gt; sending request for terms ...
+#&gt; No encoding supplied: defaulting to UTF-8.
 
 # loop all &quot;present&quot;&quot; and &quot;absent&quot; terms
 for (term in 1:nrow(termList)) {
@@ -317,52 +318,54 @@ for (term in 1:nrow(termList)) {
 # print results, showing term labels and a frequency count
 print(resultFrame)
 #&gt;                                                 label frequency
-#&gt; 1                      abscised cones or seeds absent       365
-#&gt; 2                     abscised fruits or seeds absent       365
-#&gt; 3                              abscised leaves absent       365
-#&gt; 4                             abscised leaves present         4
-#&gt; 5                           breaking leaf buds absent       159
-#&gt; 6                          breaking leaf buds present        32
-#&gt; 7                expanded immature true leaves absent       159
-#&gt; 8                       expanding true leaves present        54
-#&gt; 9               expanding unfolded true leaves absent       159
-#&gt; 10             expanding unfolded true leaves present        22
-#&gt; 11                          floral structures present        16
-#&gt; 12                                    flowers present         7
-#&gt; 13                                     fruits present        12
-#&gt; 14               immature unfolded true leaves absent       159
-#&gt; 15              immature unfolded true leaves present        22
-#&gt; 16                                  leaf buds present        32
-#&gt; 17                          mature true leaves absent       159
-#&gt; 18 new above-ground shoot-borne shoot systems present        32
-#&gt; 19                           new shoot system present        32
-#&gt; 20                      non-dormant leaf buds present        32
-#&gt; 21              non-senesced floral structures absent       175
-#&gt; 22             non-senesced floral structures present         9
-#&gt; 23                       non-senesced flowers present         7
-#&gt; 24          non-senescing unfolded true leaves absent       159
-#&gt; 25         non-senescing unfolded true leaves present        22
-#&gt; 26                      open floral structures absent       175
-#&gt; 27                           open flower heads absent       181
-#&gt; 28                                open flowers absent       181
-#&gt; 29                               open flowers present         7
-#&gt; 30          pollen-releasing floral structures absent       533
-#&gt; 31               pollen-releasing flower heads absent       358
-#&gt; 32                    pollen-releasing flowers absent       358
-#&gt; 33                   pollen-releasing flowers present         4
-#&gt; 34                    reproductive structures present        28
-#&gt; 35                                 ripe fruits absent       362
-#&gt; 36                             ripening fruits absent       176
-#&gt; 37                            ripening fruits present        12
-#&gt; 38                       senescing true leaves absent       342
-#&gt; 39                      senescing true leaves present         6
-#&gt; 40                                true leaves present       101
-#&gt; 41                        unfolded true leaves absent       159
-#&gt; 42                       unfolded true leaves present        69
-#&gt; 43                      unfolding true leaves present        32
-#&gt; 44                  unopened floral structures absent       175
-#&gt; 45                               unripe fruits absent       176
-#&gt; 46                            vascular leaves present       101
+#&gt; 1                      abscised cones or seeds absent       604
+#&gt; 2                     abscised fruits or seeds absent       604
+#&gt; 3                    abscised fruits or seeds present         2
+#&gt; 4                              abscised leaves absent       604
+#&gt; 5                             abscised leaves present        12
+#&gt; 6                           breaking leaf buds absent       263
+#&gt; 7                          breaking leaf buds present        55
+#&gt; 8                expanded immature true leaves absent       243
+#&gt; 9                       expanding true leaves present       106
+#&gt; 10              expanding unfolded true leaves absent       243
+#&gt; 11             expanding unfolded true leaves present        51
+#&gt; 12                          floral structures present        46
+#&gt; 13                                    flowers present        20
+#&gt; 14                                     fruits present        25
+#&gt; 15               immature unfolded true leaves absent       243
+#&gt; 16              immature unfolded true leaves present        51
+#&gt; 17                                  leaf buds present        55
+#&gt; 18                          mature true leaves absent       243
+#&gt; 19 new above-ground shoot-borne shoot systems present        55
+#&gt; 20                           new shoot system present        55
+#&gt; 21                      non-dormant leaf buds present        55
+#&gt; 22              non-senesced floral structures absent       287
+#&gt; 23             non-senesced floral structures present        26
+#&gt; 24                       non-senesced flowers present        20
+#&gt; 25          non-senescing unfolded true leaves absent       243
+#&gt; 26         non-senescing unfolded true leaves present        51
+#&gt; 27                      open floral structures absent       287
+#&gt; 28                           open flower heads absent       296
+#&gt; 29                                open flowers absent       296
+#&gt; 30                               open flowers present        20
+#&gt; 31          pollen-releasing floral structures absent       877
+#&gt; 32               pollen-releasing flower heads absent       590
+#&gt; 33                    pollen-releasing flowers absent       590
+#&gt; 34                   pollen-releasing flowers present         8
+#&gt; 35                    reproductive structures present        71
+#&gt; 36                                 ripe fruits absent       599
+#&gt; 37                                ripe fruits present         1
+#&gt; 38                             ripening fruits absent       289
+#&gt; 39                            ripening fruits present        25
+#&gt; 40                       senescing true leaves absent       546
+#&gt; 41                      senescing true leaves present        11
+#&gt; 42                                true leaves present       204
+#&gt; 43                        unfolded true leaves absent       243
+#&gt; 44                       unfolded true leaves present       149
+#&gt; 45                      unfolding true leaves present        55
+#&gt; 46                  unopened floral structures absent       287
+#&gt; 47                               unripe fruits absent       289
+#&gt; 48                            vascular leaves present       204
 </code></pre>
 
 </body>

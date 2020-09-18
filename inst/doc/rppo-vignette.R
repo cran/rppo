@@ -1,4 +1,4 @@
-## ----setup, echo = FALSE-------------------------------------------------
+## ----setup, echo = FALSE------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -6,7 +6,7 @@ knitr::opts_chunk$set(
 )
 library(rppo)
 
-## ----term example, echo=TRUE, message=FALSE, warning=FALSE---------------
+## ----term example, echo=TRUE, message=FALSE, warning=FALSE--------------------
 present_terms <- ppo_terms(present = TRUE)
 # print the first five rows, with just the termIDs and labels
 print(present_terms[1:5,c("termID","label")])
@@ -16,13 +16,13 @@ results <- ppo_data(genus = "Quercus", fromYear = 2013, toYear = 2013, fromDay =
 df <- results$data
 print(df[1:1,])
 
-## ----readme results example----------------------------------------------
+## ----readme results example---------------------------------------------------
 cat(results$readme)
 
-## ----readme possible results example-------------------------------------
+## ----readme possible results example------------------------------------------
 cat(results$number_possible)
 
-## ----workting with terms and data example--------------------------------
+## ----workting with terms and data example-------------------------------------
 ###############################################################################
 # Generate a frequency data frame showing the number of times each termID
 # is populated for genus equals "Quercus" above latitude of 47
