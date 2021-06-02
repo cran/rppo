@@ -207,15 +207,10 @@ hr {
 
 <p>It is frequently useful to look through the list of present and absent terms contained in the PPO.   The <code>ppo_terms</code> function returns present terms, absent terms, or both, with columns containing a termID, label, definition and full URI for each term.  Use the termIDs returned from this function to query terms in the <code>ppo_data</code> function.  The following example returns the present terms into a &ldquo;present_terms&rdquo; data frame and a sample slice from the dataframe.</p>
 
-<pre><code class="r">present_terms &lt;- ppo_terms(present = TRUE)
+<pre><code class="r">present_terms &lt;- ppo_terms(present = TRUE, timeLimit = 2)
 # print the first five rows, with just the termIDs and labels
 print(present_terms[1:5,c(&quot;termID&quot;,&quot;label&quot;)])
-#&gt;            termID                            label
-#&gt; 1 obo:PPO_0002359  abscised cones or seeds present
-#&gt; 2 obo:PPO_0002358 abscised fruits or seeds present
-#&gt; 3 obo:PPO_0002357          abscised leaves present
-#&gt; 4 obo:PPO_0002311       breaking leaf buds present
-#&gt; 5 obo:PPO_0002346                    cones present
+#&gt; NULL
 </code></pre>
 
 <h3>ppo_data function</h3>
@@ -224,39 +219,20 @@ print(present_terms[1:5,c(&quot;termID&quot;,&quot;label&quot;)])
 
 <p>The &ldquo;df&rdquo; variable below is populated with results from the data element in the results list, with an example slice of data showing the first record.</p>
 
-<pre><code class="r">results &lt;- ppo_data(genus = &quot;Quercus&quot;, fromYear = 2013, toYear = 2013, fromDay = 100, toDay = 110, termID = &#39;obo:PPO_0002313&#39;, limit = 10)
+<pre><code class="r">results &lt;- ppo_data(genus = &quot;Quercus&quot;, fromYear = 2013, toYear = 2013, fromDay = 100, toDay = 110, termID = &#39;obo:PPO_0002313&#39;, limit = 10, timeLimit = 2)
 df &lt;- results$data
 print(df[1:1,])
-#&gt;   dayOfYear year   genus specificEpithet latitude longitude
-#&gt; 1       110 2013 Quercus           rubra 40.86628 -73.87572
-#&gt;                                                                                                            termID
-#&gt; 1 obo:PPO_0002000,obo:PPO_0002014,obo:PPO_0002015,obo:PPO_0002017,obo:PPO_0002312,obo:PPO_0002313,obo:PPO_0002315
-#&gt;    source                                  eventId
-#&gt; 1 USA-NPN urn:phenologicalObservingProcess/5132665
+#&gt; NULL
 </code></pre>
 
 <p>The readme and citation files returned by the list of results can be accessed by calling the readme and citation elements.  Note that the the file &ldquo;citation_and_data_use_policies.txt&rdquo; that is referred to in the readme file can be accessed using <code>cat(results$citation)</code> </p>
 
 <pre><code class="r">cat(results$readme)
-#&gt; The following contains information about your download from the Global Plant 
-#&gt; Phenology Database.  Please refer to the citation_and_data_use_policies.txt 
-#&gt; file for important information about data usage policies, licensing, and 
-#&gt; citation protocols for each dataset.  This file contains summary information 
-#&gt; about the query that was run.  
-#&gt; 
-#&gt; data file = data.csv
-#&gt; date query ran = Thu Sep 17 2020 13:14:33 GMT-0400 (EDT)
-#&gt; query = +genus:Quercus AND +plantStructurePresenceTypes:&quot;http://purl.obolibrary.org/obo/PPO_0002313&quot; AND +year:&gt;=2013 AND +year:&lt;=2013 AND +dayOfYear:&gt;=100 AND +dayOfYear:&lt;=110 AND source:USA-NPN,NEON
-#&gt; fields returned = dayOfYear,year,genus,specificEpithet,latitude,longitude,source,eventId
-#&gt; user specified limit = 10
-#&gt; total results possible = 518
-#&gt; total results returned = 0
 </code></pre>
 
 <p>The results lists also shows the number of possible results in the results set, which is useful if the submitted query had a limit.  For example, in the query above, the limit is set to 10 but we want to know how many records were possible if the limit was not set.</p>
 
 <pre><code class="r">cat(results$number_possible)
-#&gt; 518
 </code></pre>
 
 <h3>working with terms and data together</h3>
@@ -271,9 +247,10 @@ print(df[1:1,])
 ###############################################################################
 df &lt;- ppo_data(
   genus = &quot;Quercus&quot;, 
-  bbox=&quot;47,-180,90,180&quot;)
+  bbox=&quot;47,-180,90,180&quot;, timeLimit = 2)
 #&gt; sending request for data ...
 #&gt; https://www.plantphenology.org/api/v2/download/?q=%2Bgenus:Quercus+AND+%2Blatitude:&gt;=47+AND+%2Blatitude:&lt;=90+AND+%2Blongitude:&gt;=-180+AND+%2Blongitude:&lt;=180+AND+source:USA-NPN,NEON&amp;source=latitude,longitude,year,dayOfYear,termID
+#&gt; The server is not responding.  If the problem persists contact the author.
 # return just the termID column
 t1 &lt;- df$data[,c(&#39;termID&#39;)]
 # paste each cell into one string
@@ -293,79 +270,37 @@ resultFrame &lt;- data.frame(
 # Replace termIDs with labels in frequency frame
 ###############################################################################
 # fetch &quot;present&quot; and &quot;absent&quot; terms using `ppo_terms`
-termList &lt;- ppo_terms(absent = TRUE, present = TRUE);
-#&gt; sending request for terms ...
-#&gt; No encoding supplied: defaulting to UTF-8.
+termList &lt;- ppo_terms(absent = TRUE, present = TRUE, timeLimit = 2);
+#&gt; The server is not responding.  If the problem persists contact the author.  You may also try increasing the timeLimit parameter.
 
 # loop all &quot;present&quot;&quot; and &quot;absent&quot; terms
-for (term in 1:nrow(termList)) {
-  termListTermID&lt;-termList[term,&#39;termID&#39;];
-  termListLabel&lt;-termList[term,&#39;label&#39;];
-  # loop all rows that have a frequency generated
-  for (row in 1:nrow(freqFrame)) {
-    freqFrameTermID = freqFrame[row,&#39;t3&#39;]
-    freqFrameFrequency = freqFrame[row,&#39;Freq&#39;]
-    # Populate resultFrame with matching &quot;present&quot; or &quot;absent&quot; labels.
-    # In this step, we will ignore &quot;presence&quot; terms
-    # found in the frequency frame since the ppo_terms only returns
-    # &quot;present&quot; and &quot;absent&quot; terms. 
-    if (freqFrameTermID == termListTermID) {
-      resultFrame[nrow(resultFrame)+1,] &lt;- c(termListLabel,freqFrameFrequency)
+if (!is.null(termList)) {
+  for (term in 1:nrow(termList)) {
+    termListTermID&lt;-termList[term,&#39;termID&#39;];
+    termListLabel&lt;-termList[term,&#39;label&#39;];
+    # loop all rows that have a frequency generated
+    for (row in 1:nrow(freqFrame)) {
+      freqFrameTermID = freqFrame[row,&#39;t3&#39;]
+      freqFrameFrequency = freqFrame[row,&#39;Freq&#39;]
+      # Populate resultFrame with matching &quot;present&quot; or &quot;absent&quot; labels.
+      # In this step, we will ignore &quot;presence&quot; terms
+      # found in the frequency frame since the ppo_terms only returns
+      # &quot;present&quot; and &quot;absent&quot; terms. 
+      if (freqFrameTermID == termListTermID) {
+        resultFrame[nrow(resultFrame)+1,] &lt;- c(termListLabel,freqFrameFrequency)
+      }
     }
   }
+} else {
+  message(&quot;termList is null, likely due to a server response issue.  Try increasing the timeLimit or try again later. If the problem persists email the authors.&quot;)
 }
+#&gt; termList is null, likely due to a server response issue.  Try increasing the timeLimit or try again later. If the problem persists email the authors.
+
 
 # print results, showing term labels and a frequency count
 print(resultFrame)
-#&gt;                                                 label frequency
-#&gt; 1                      abscised cones or seeds absent       604
-#&gt; 2                     abscised fruits or seeds absent       604
-#&gt; 3                    abscised fruits or seeds present         2
-#&gt; 4                              abscised leaves absent       604
-#&gt; 5                             abscised leaves present        12
-#&gt; 6                           breaking leaf buds absent       263
-#&gt; 7                          breaking leaf buds present        55
-#&gt; 8                expanded immature true leaves absent       243
-#&gt; 9                       expanding true leaves present       106
-#&gt; 10              expanding unfolded true leaves absent       243
-#&gt; 11             expanding unfolded true leaves present        51
-#&gt; 12                          floral structures present        46
-#&gt; 13                                    flowers present        20
-#&gt; 14                                     fruits present        25
-#&gt; 15               immature unfolded true leaves absent       243
-#&gt; 16              immature unfolded true leaves present        51
-#&gt; 17                                  leaf buds present        55
-#&gt; 18                          mature true leaves absent       243
-#&gt; 19 new above-ground shoot-borne shoot systems present        55
-#&gt; 20                           new shoot system present        55
-#&gt; 21                      non-dormant leaf buds present        55
-#&gt; 22              non-senesced floral structures absent       287
-#&gt; 23             non-senesced floral structures present        26
-#&gt; 24                       non-senesced flowers present        20
-#&gt; 25          non-senescing unfolded true leaves absent       243
-#&gt; 26         non-senescing unfolded true leaves present        51
-#&gt; 27                      open floral structures absent       287
-#&gt; 28                           open flower heads absent       296
-#&gt; 29                                open flowers absent       296
-#&gt; 30                               open flowers present        20
-#&gt; 31          pollen-releasing floral structures absent       877
-#&gt; 32               pollen-releasing flower heads absent       590
-#&gt; 33                    pollen-releasing flowers absent       590
-#&gt; 34                   pollen-releasing flowers present         8
-#&gt; 35                    reproductive structures present        71
-#&gt; 36                                 ripe fruits absent       599
-#&gt; 37                                ripe fruits present         1
-#&gt; 38                             ripening fruits absent       289
-#&gt; 39                            ripening fruits present        25
-#&gt; 40                       senescing true leaves absent       546
-#&gt; 41                      senescing true leaves present        11
-#&gt; 42                                true leaves present       204
-#&gt; 43                        unfolded true leaves absent       243
-#&gt; 44                       unfolded true leaves present       149
-#&gt; 45                      unfolding true leaves present        55
-#&gt; 46                  unopened floral structures absent       287
-#&gt; 47                               unripe fruits absent       289
-#&gt; 48                            vascular leaves present       204
+#&gt; [1] label     frequency
+#&gt; &lt;0 rows&gt; (or 0-length row.names)
 </code></pre>
 
 </body>

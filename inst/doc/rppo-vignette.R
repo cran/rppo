@@ -7,12 +7,12 @@ knitr::opts_chunk$set(
 library(rppo)
 
 ## ----term example, echo=TRUE, message=FALSE, warning=FALSE--------------------
-present_terms <- ppo_terms(present = TRUE)
+present_terms <- ppo_terms(present = TRUE, timeLimit = 2)
 # print the first five rows, with just the termIDs and labels
 print(present_terms[1:5,c("termID","label")])
 
 ## ----data example, echo=TRUE, message=FALSE, warning=FALSE, paged.print=TRUE----
-results <- ppo_data(genus = "Quercus", fromYear = 2013, toYear = 2013, fromDay = 100, toDay = 110, termID = 'obo:PPO_0002313', limit = 10)
+results <- ppo_data(genus = "Quercus", fromYear = 2013, toYear = 2013, fromDay = 100, toDay = 110, termID = 'obo:PPO_0002313', limit = 10, timeLimit = 2)
 df <- results$data
 print(df[1:1,])
 
@@ -31,7 +31,7 @@ cat(results$number_possible)
 ###############################################################################
 df <- ppo_data(
   genus = "Quercus", 
-  bbox="47,-180,90,180")
+  bbox="47,-180,90,180", timeLimit = 2)
 # return just the termID column
 t1 <- df$data[,c('termID')]
 # paste each cell into one string
@@ -51,25 +51,30 @@ resultFrame <- data.frame(
 # Replace termIDs with labels in frequency frame
 ###############################################################################
 # fetch "present" and "absent" terms using `ppo_terms`
-termList <- ppo_terms(absent = TRUE, present = TRUE);
+termList <- ppo_terms(absent = TRUE, present = TRUE, timeLimit = 2);
 
 # loop all "present"" and "absent" terms
-for (term in 1:nrow(termList)) {
-  termListTermID<-termList[term,'termID'];
-  termListLabel<-termList[term,'label'];
-  # loop all rows that have a frequency generated
-  for (row in 1:nrow(freqFrame)) {
-    freqFrameTermID = freqFrame[row,'t3']
-    freqFrameFrequency = freqFrame[row,'Freq']
-    # Populate resultFrame with matching "present" or "absent" labels.
-    # In this step, we will ignore "presence" terms
-    # found in the frequency frame since the ppo_terms only returns
-    # "present" and "absent" terms. 
-    if (freqFrameTermID == termListTermID) {
-      resultFrame[nrow(resultFrame)+1,] <- c(termListLabel,freqFrameFrequency)
+if (!is.null(termList)) {
+  for (term in 1:nrow(termList)) {
+    termListTermID<-termList[term,'termID'];
+    termListLabel<-termList[term,'label'];
+    # loop all rows that have a frequency generated
+    for (row in 1:nrow(freqFrame)) {
+      freqFrameTermID = freqFrame[row,'t3']
+      freqFrameFrequency = freqFrame[row,'Freq']
+      # Populate resultFrame with matching "present" or "absent" labels.
+      # In this step, we will ignore "presence" terms
+      # found in the frequency frame since the ppo_terms only returns
+      # "present" and "absent" terms. 
+      if (freqFrameTermID == termListTermID) {
+        resultFrame[nrow(resultFrame)+1,] <- c(termListLabel,freqFrameFrequency)
+      }
     }
   }
+} else {
+  message("termList is null, likely due to a server response issue.  Try increasing the timeLimit or try again later. If the problem persists email the authors.")
 }
+
 
 # print results, showing term labels and a frequency count
 print(resultFrame)
